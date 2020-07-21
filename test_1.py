@@ -20,6 +20,7 @@ def draw_graph(edges):
     nx.draw_networkx_nodes(G, pos, cmap=plt.get_cmap('Reds'), \
         node_color = colors, node_size=node_sizes, alpha=0.5)
     nx.draw_networkx_edges(G, pos, edge_color="black", edgelist=black_edges, width=[k["weight"] for i, j, k in G.edges(data=True)])
+    print(G.edges(data=True))
     nx.draw_networkx_labels(G,pos,font_family='IPAexGothic')
     nx.draw_networkx_edge_labels(G,pos,edge_labels=edge_labels,font_color='red', font_family='IPAexGothic', rotate="False")
     plt.axis('off')
