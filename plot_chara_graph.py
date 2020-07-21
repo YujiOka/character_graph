@@ -81,8 +81,6 @@ def search_distance(text, pos, candidate, distance, after_flag, start_dis, end_d
 
 # 関係表現に最も近い二人のキャラのエッジにラベル付け
 def add_rel_to_edge(G, text, rel_position):
-    # before_candidate = []  # 関係表現より前のキャラ
-    # after_candidate = []  # 関係表現より後のキャラ
     candidate = [] # 関係表現の宛先候補
     distance = [] # 関係表現からの距離
     after_flag = False
@@ -107,7 +105,6 @@ def connect_chara(t_chara, G, rel_position, text):
                 G.add_edge(t_chara[i], t_chara[j], weight=w_num+1)
     if rel_position[0] != -1:
         add_rel_to_edge(G, text, rel_position)
-    # print(G.edges(data=True))
 
 # 関係表現が出てきた位置を記憶
 def remember_relation(rel_position, text, t):
@@ -146,7 +143,6 @@ def calc_chara(chara, t_chara, text):
 def end_sent(G, t_chara, rel_position, text):
     if t_chara != []:
         connect_chara(t_chara, G, rel_position, text)
-    t_chara = []
 
 # 文章を走査
 def calc_sent(G, text):
@@ -155,13 +151,12 @@ def calc_sent(G, text):
     rel_position = [-1]  # 関係表現の出現位置
     for t in text:
         if t[0] == "。":
-            print(t_chara)
             end_sent(G, t_chara, rel_position, text)
+            t_chara = []
         elif t[1][-1] != "O":
             calc_chara(chara, t_chara, t)
         elif t[1][-2].replace("B-","") == "REL":
             remember_relation(rel_position, text, t)
-    # print(chara)
     add_chara(G, chara)
 
 # ファイルから教師テキスト読み出し
@@ -169,7 +164,8 @@ def open_file(file_name):
     with open(file_name, mode="r") as f:
         lines = f.read()
     morphs = lines.split("\n")
-    morphs.pop(-1)
+    while morphs[-1] == "":
+        morphs.pop(-1)
     morphs = [morph.split("\t") for morph in morphs]
     for i in range(len(morphs)):
         morphs[i][1] = morphs[i][1].split(",")
