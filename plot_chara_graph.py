@@ -33,6 +33,15 @@ def connect_chara(t_chara, G):
                 G.add_edge(t_chara[i], t_chara[j], weight=w_num+1)
     # print(G.edges(data=True))
 
+# 性別によってノードの色を変化
+def calc_sex(text, chara):
+    if text[0] in ["彼"]:
+        print(chara)
+        chara[chara[0].index(text[1][-1])][2] = "blue"
+        print(chara)
+    elif text[0] in ["彼女"]:
+        chara[chara[0].index(text[1][-1])][2] = "red"
+
 # キャラを計数
 def calc_chara(chara, t_chara, text):
     name = [c[0] for c in chara]
@@ -41,13 +50,7 @@ def calc_chara(chara, t_chara, text):
     else:
         chara[chara[0].index(text[1][-1])][1] += 1
     if text[1][-2].replace("B-","") != "NAME":
-        # print(text)
-        if text[0] in ["彼"]:
-            print(chara)
-            chara[chara[0].index(text[1][-1])][2] = "blue"
-            print(chara)
-        elif text[0] in ["彼女"]:
-            chara[chara[0].index(text[1][-1])][2] = "red"
+        calc_sex(text, chara)
     if text[1][-1] not in t_chara:
         t_chara.append(text[1][-1])
 
