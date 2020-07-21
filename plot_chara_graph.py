@@ -32,22 +32,16 @@ def calc_distance(pos, distance, start_dis, end_dis):
             distance[i] = distance[i] - pos
         else:
             distance[i] = pos - distance[i]
-    print(distance)
 
 # 関係表現の宛先を決定
 def calc_rel(pos, candidate, distance, start_dis, end_dis):
     tmp1 = 0
     tmp2 = 1
-    print(candidate)
-    print(distance)
     calc_distance(pos, distance, start_dis, end_dis)
     for i in range(2, len(distance)):
-        print(candidate[tmp2])
         if distance[tmp2] > distance[i]:
             tmp2 = i
-    print("-----")
     for j in range(1, len(distance)):
-        print(candidate[tmp1])
         if distance[tmp1] > distance[j] and candidate[tmp2] != candidate[j]:
             tmp1 = j
     return candidate[tmp1], candidate[tmp2]
@@ -66,6 +60,12 @@ def detect_relation(text, rel_position):
     tmp = text[rel_position][0]
     if tmp in ["祖父", "祖母", "親", "母", "父", "兄", "弟", "姉", "妹",  "息子", "娘", "いとこ", "おじ", "おば", "孫", "嫁", "妻", "夫", "甥", "姪"]:
         return "家族"
+    elif tmp in ["上司", "部下"]:
+        return "上司・部下"
+    elif tmp in ["師匠", "弟子"]:
+        return "師弟"
+    elif tmp in ["先生", "生徒"]:
+        return "先生・生徒"
     return get_relation_name(text, rel_position)
 
 # 関係表現周辺の人物とその位置を抽出
@@ -91,7 +91,6 @@ def add_rel_to_edge(G, text, rel_position):
     after_flag = False
     start_dis = -1
     end_dis = -1
-    print(rel_position)
     for pos in rel_position:
         start_dis, end_dis = search_distance(text, pos, candidate, distance, after_flag, start_dis, end_dis)
         rel = detect_relation(text, pos)
@@ -184,37 +183,18 @@ def open_file(file_name):
 def make_graph():
     G = nx.Graph()
     text = open_file("data/tmp.txt")
-    # G = calc_sent(G, text)
     calc_sent(G, text)
 
-    # G.add_edges_from(edges)
     pos = nx.spring_layout(G)
     plt.figure()
-    # labels = {"A":"岡","B":"浜","C":"池","D":"中"}
-    # nx.draw(G,pos,edge_color='black',node_size=5,alpha=0.9)
-    # nx.draw_networkx_labels(G, pos, labels=labels, font_family="IPAexGothic")
-    # nx.draw_networkx_edge_labels(G,pos,edge_labels={('A','B'):'友達',\
-    # ('B','C'):'友達',('B','D'):'敵'},font_color='red', font_family='IPAexGothic')
-
-    # edges = [('明治','大正', {"weight":5}),('大正','昭和', {"weight":12}),('昭和','平成', {"weight":7}), \
-    #     ('平成','令和', {"weight":3}),('昭和','明治', {"weight":6})]
-    # pos = nx.spring_layout(G, k=1.0)
-    # colors = ["red","green","yellow","blue","magenta"]
-    # node_sizes = [1200,1200,1200,1200,1200]
-    # edge_labels = {("明治", "大正"):"親子", ("大正", "昭和"):"師弟", ("昭和", "平成"):"仲間", ("平成", "令和"):"家族", ("昭和", "明治"):"メンバー"}
-    print(G.edges(data=True))
+    # print(G.edges(data=True))
     # labels = {("ゴーシュ", "アレン"):"仕事仲間"}
     # print(labels)
     nx.draw_networkx_nodes(G, pos, cmap=plt.get_cmap('Reds'), node_color=[j["color"] for i, j in G.nodes(data=True)] ,alpha=0.5, node_size=[j["weight"]*1500 for i, j in G.nodes(data=True)])
-    # nx.draw_networkx_edges(G, pos, edge_color="black", edgelist=black_edges, width=[k["weight"] for i, j, k in G.edges(data=True)])
     nx.draw_networkx_edges(G, pos, edge_color="black", width=[k["weight"] for i, j, k in G.edges(data=True)])
     nx.draw_networkx_labels(G,pos,font_family='IPAexGothic')
     nx.draw_networkx_edge_labels(G,pos,edge_labels={(i, j):k["label"] for i, j, k in G.edges(data=True)},font_color='red', font_family='IPAexGothic', rotate="False")
-    
     # print(G.nodes(data=True))
-    
-    
-
     plt.axis('off')
     plt.show()
 
