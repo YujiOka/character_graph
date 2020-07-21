@@ -16,7 +16,8 @@ def save_mecab_data(t, i):
         f.write(morph)
 
 def make_exp_file():
-    files = glob.glob("data/raw/*")
+    # files = glob.glob("data/raw/*")
+    files = ["data/tmp1.txt"]
     i = len(glob.glob("data/exp/*"))
     for file_name in files:
         with open(file_name, mode="r") as f:
