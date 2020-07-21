@@ -9,7 +9,7 @@ def save_mecab_data(t, i):
     for t in text:
         if t == "EOS":
             break
-        t += ",O"
+        t += ",O,O"
         morph += t + "\n"
     with open("data/exp/{}.txt".format(i), mode="w") as f:  # 実際に使用する場合は下側のwithを使う
     # with open("data/exp/{}.txt".format(i), mode="w") as f:
@@ -21,7 +21,8 @@ def make_exp_file():
     for file_name in files:
         with open(file_name, mode="r") as f:
             tmp = f.read()
-        save_mecab_data(tmp,i)
+        save_mecab_data(tmp, i)
+        i += 1
 
 if __name__ == "__main__":
     make_exp_file()
