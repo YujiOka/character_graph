@@ -4,7 +4,8 @@ def tmp(test):
     test.append(["c", 3])
 
 test = [["a", 1]]
-print(test[0].index("A"))
+a = ["a", 1]
+print(test.index(a))
 # test[test[0].index("a")][1] = 2
 # print(test)
 # test.append(["b",2])

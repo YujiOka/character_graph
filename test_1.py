@@ -7,6 +7,7 @@ def draw_graph(edges):
     G = nx.Graph()
     G.add_edges_from(edges)
     G.add_node("大化", weight=5)
+    G.add_edge("大化", "明治", weight=1, label="今昔")
     # Specify the edges you want here
     # edge_colors = ['black' for edge in G.edges()]
     black_edges = [edge for edge in G.edges()]
