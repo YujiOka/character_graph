@@ -4,7 +4,7 @@ import japanize_matplotlib
 
 # 文章を走査
 def calc_sent(G, text):
-    pass
+    return G
 
 # ファイルから教師テキスト読み出し
 def open_file(file_name):
@@ -19,7 +19,7 @@ def open_file(file_name):
 
 # グラフ作成プログラム本体
 def make_graph():
-    G=nx.Graph()
+    G = nx.Graph()
     text = open_file("data/tmp.txt")
     G = calc_sent(G, text)
 
