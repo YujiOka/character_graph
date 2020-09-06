@@ -58,13 +58,11 @@ def get_relation_name(text, rel_position):
 # 関係表現からエッジのラベルを命名
 def detect_relation(text, rel_position):
     tmp = text[rel_position][0]
-    if tmp in ["祖父", "祖母", "親", "母", "父", "兄", "弟", "姉", "妹",  "息子", "娘", "いとこ", "おじ", "おば", "孫", "嫁", "妻", "夫", "甥", "姪"]:
-        return "家族"
-    elif tmp in ["上司", "部下"]:
+    if tmp in ["上司", "部下"]:
         return "上司・部下"
-    elif tmp in ["師匠", "弟子"]:
-        return "師弟"
-    elif tmp in ["先生", "生徒"]:
+    elif tmp in ["恋愛", "恋", "愛", "惚れ"]:
+        return "恋愛"
+    elif tmp in ["師匠", "弟子", "先生", "生徒"]:
         return "先生・生徒"
     return get_relation_name(text, rel_position)
 
@@ -85,7 +83,7 @@ def search_distance(text, pos, candidate, distance, after_flag, start_dis, end_d
     return start_dis, end_dis
 
 # 関係表現に最も近い二人のキャラのエッジにラベル付け
-def add_rel_to_edge(G, text, rel_position):
+def add_rel_to_edge(G, text, rel_position, e_cnct):
     candidate = [] # 関係表現の宛先候補
     distance = [] # 関係表現からの距離
     after_flag = False
@@ -95,7 +93,8 @@ def add_rel_to_edge(G, text, rel_position):
         start_dis, end_dis = search_distance(text, pos, candidate, distance, after_flag, start_dis, end_dis)
         rel = detect_relation(text, pos)
         can_1, can_2 = calc_rel(pos, candidate, distance, start_dis, end_dis)
-        G.add_edge(can_1, can_2, label=rel)
+        w_num = connect_check(can_1, can_2, e_cnct)
+        G.add_edge(can_1, can_2, weight=w_num+1, label=rel)
         candidate = []
         distance = []
     
@@ -111,7 +110,7 @@ def connect_chara(t_chara, G, rel_position, text):
             else:
                 G.add_edge(t_chara[i], t_chara[j], weight=w_num+1)
     if rel_position[0] != -1:
-        add_rel_to_edge(G, text, rel_position)
+        add_rel_to_edge(G, text, rel_position, e_cnct)
 
 # 関係表現が出てきた位置を記憶
 def remember_relation(rel_position, text, t):
@@ -182,19 +181,19 @@ def open_file(file_name):
 # グラフ作成プログラム本体
 def make_graph():
     G = nx.Graph()
-    text = open_file("data/tmp.txt")
+    text = open_file("data/tmp3.txt")
     calc_sent(G, text)
 
     pos = nx.spring_layout(G)
     plt.figure()
-    # print(G.edges(data=True))
-    # labels = {("ゴーシュ", "アレン"):"仕事仲間"}
-    # print(labels)
+    print(G.edges(data=True))
+    print(G.nodes(data=True))
+    for n1,n2,attr in G.edges(data=True):
+        print (n1,n2,attr)
     nx.draw_networkx_nodes(G, pos, cmap=plt.get_cmap('Reds'), node_color=[j["color"] for i, j in G.nodes(data=True)] ,alpha=0.5, node_size=[j["weight"]*1500 for i, j in G.nodes(data=True)])
     nx.draw_networkx_edges(G, pos, edge_color="black", width=[k["weight"] for i, j, k in G.edges(data=True)])
     nx.draw_networkx_labels(G,pos,font_family='IPAexGothic')
     nx.draw_networkx_edge_labels(G,pos,edge_labels={(i, j):k["label"] for i, j, k in G.edges(data=True)},font_color='red', font_family='IPAexGothic', rotate="False")
-    # print(G.nodes(data=True))
     plt.axis('off')
     plt.show()
 
